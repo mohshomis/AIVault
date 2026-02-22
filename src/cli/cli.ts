@@ -4,6 +4,7 @@ import { setCommand } from './commands/set';
 import { listCommand } from './commands/list';
 import { deleteCommand } from './commands/delete';
 import { exportCommand } from './commands/export';
+import { dashboardCommand } from './commands/dashboard';
 import { promptHidden } from './utils';
 
 async function getPassword(): Promise<string> {
@@ -39,6 +40,7 @@ Usage:
   aivault set <NAME> --desc "description" [--tags "tag1,tag2"]  Add or update a secret
   aivault list [--tag "tag"]                      List secrets (names only, never values)
   aivault delete <NAME>                           Delete a secret
+  aivault dashboard                                Open web UI to manage secrets
   aivault export-descriptions [--json] [--tag "tag"]  Export secret metadata
 
 Environment:
@@ -91,6 +93,12 @@ async function main(): Promise<void> {
     case 'export-descriptions': {
       const password = await getPassword();
       exportCommand(flags.json === 'true', flags.tag, password);
+      break;
+    }
+
+    case 'dashboard': {
+      const password = await getPassword();
+      dashboardCommand(password);
       break;
     }
 
