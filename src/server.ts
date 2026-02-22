@@ -4,7 +4,17 @@ import { VaultStore } from './vault/store';
 import { runCommand } from './executor/runner';
 import { isValidSecretName } from './vault/types';
 
-export function createServer(store: VaultStore): McpServer {
+function vaultError(store: VaultStore | undefined): string | null {
+  if (!store) {
+    return 'AIVAULT_MASTER_PASSWORD environment variable is not set. Please set it in your MCP server config.';
+  }
+  if (!store.isInitialized()) {
+    return 'Vault not initialized. Please run "aivault init" in your terminal first.';
+  }
+  return null;
+}
+
+export function createServer(store: VaultStore | undefined): McpServer {
   const server = new McpServer({
     name: 'aivault',
     version: '0.1.0',
@@ -16,16 +26,15 @@ export function createServer(store: VaultStore): McpServer {
     'List available secrets (names, descriptions, tags only — never values). Use this to discover what credentials are available.',
     { tag: z.string().optional().describe('Optional tag to filter secrets by (e.g., "project-x")') },
     async ({ tag }) => {
+      const err = vaultError(store);
+      if (err) {
+        return { content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: err }) }], isError: true };
+      }
       try {
-        const secrets = store.listSecrets(tag);
-        return {
-          content: [{ type: 'text' as const, text: JSON.stringify({ secrets }, null, 2) }],
-        };
-      } catch (err: any) {
-        return {
-          content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: err.message }) }],
-          isError: true,
-        };
+        const secrets = store!.listSecrets(tag);
+        return { content: [{ type: 'text' as const, text: JSON.stringify({ secrets }, null, 2) }] };
+      } catch (e: any) {
+        return { content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: e.message }) }], isError: true };
       }
     }
   );
@@ -40,19 +49,19 @@ export function createServer(store: VaultStore): McpServer {
       timeout_seconds: z.number().optional().default(30).describe('Optional timeout in seconds. Defaults to 30, max 300.'),
     },
     async ({ command, working_directory, timeout_seconds }) => {
+      const err = vaultError(store);
+      if (err) {
+        return { content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: err }) }], isError: true };
+      }
       try {
-        const secretValues = store.getAllSecretValues();
+        const secretValues = store!.getAllSecretValues();
         const result = runCommand({ command, working_directory, timeout_seconds }, secretValues);
-
         return {
           content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
           isError: result.status === 'error',
         };
-      } catch (err: any) {
-        return {
-          content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: err.message }) }],
-          isError: true,
-        };
+      } catch (e: any) {
+        return { content: [{ type: 'text' as const, text: JSON.stringify({ status: 'error', message: e.message }) }], isError: true };
       }
     }
   );
@@ -86,12 +95,7 @@ export function createServer(store: VaultStore): McpServer {
       return {
         content: [{
           type: 'text' as const,
-          text: JSON.stringify({
-            status: 'secret_requested',
-            message,
-            name,
-            reason,
-          }, null, 2),
+          text: JSON.stringify({ status: 'secret_requested', message, name, reason }, null, 2),
         }],
       };
     }
