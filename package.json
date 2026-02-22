@@ -6,15 +6,49 @@
   "bin": {
     "aivault": "dist/cli/cli.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "cli": "ts-node src/cli/cli.ts",
     "test": "jest"
   },
-  "keywords": ["mcp", "secrets", "vault", "ai", "credentials", "security"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "secrets",
+    "vault",
+    "ai",
+    "credentials",
+    "security",
+    "claude",
+    "cursor",
+    "kiro",
+    "windsurf",
+    "api-keys",
+    "secret-management",
+    "ai-agent",
+    "llm"
+  ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mohshomis/AIVault.git"
+  },
+  "homepage": "https://github.com/mohshomis/AIVault#readme",
+  "bugs": {
+    "url": "https://github.com/mohshomis/AIVault/issues"
+  },
+  "author": "mohshomis",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1"
   },
