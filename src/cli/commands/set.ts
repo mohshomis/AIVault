@@ -5,13 +5,14 @@ export async function setCommand(
   name: string,
   description: string,
   tags: string[],
-  password: string
+  password: string,
+  force: boolean = false
 ): Promise<void> {
   const store = new VaultStore(password);
 
   // Check if secret already exists
   const existing = store.getSecret(name);
-  if (existing) {
+  if (existing && !force) {
     const overwrite = await promptConfirm(`Secret ${name} already exists. Overwrite? (y/N): `);
     if (!overwrite) {
       console.log('Aborted.');

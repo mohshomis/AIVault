@@ -68,8 +68,9 @@ async function main(): Promise<void> {
         process.exit(1);
       }
       const tags = flags.tags ? flags.tags.split(',').map(t => t.trim()) : [];
+      const force = flags.force === 'true';
       const password = await getPassword();
-      await setCommand(name, desc, tags, password);
+      await setCommand(name, desc, tags, password, force);
       break;
     }
 
