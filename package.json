@@ -1,0 +1,29 @@
+{
+  "name": "aivault-mcp",
+  "version": "0.1.0",
+  "description": "Secure secret management for AI agents — MCP server that lets AI use your credentials without seeing them",
+  "main": "dist/index.js",
+  "bin": {
+    "aivault": "dist/cli/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "cli": "ts-node src/cli/cli.ts",
+    "test": "jest"
+  },
+  "keywords": ["mcp", "secrets", "vault", "ai", "credentials", "security"],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-node": "^10.0.0"
+  }
+}
