@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/mohshomis/AIVault/issues"
   },
-  "author": "mohshomis",
+  "author": "Mohammed Shomis (https://github.com/mohshomis)",
   "engines": {
     "node": ">=18"
   },

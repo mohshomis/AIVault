@@ -169,4 +169,4 @@ MIT
 
 ---
 
-Built with ❤️ for developers who care about security.
+Built by [Mohammed Shomis](https://github.com/mohshomis) with ❤️ for developers who care about security.
