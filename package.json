@@ -1,6 +1,6 @@
 {
   "name": "aivault-mcp",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Secure secret management for AI agents — MCP server that lets AI use your credentials without seeing them",
   "main": "dist/index.js",
   "bin": {

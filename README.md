@@ -1,10 +1,10 @@
-# 🔐 AIVault
+# AIVault
 
 **Stop pasting API keys into AI chat.**
 
 AIVault is an [MCP server](https://modelcontextprotocol.io) that lets AI agents use your credentials **without ever seeing them**. The AI references secrets by name (`$GITHUB_TOKEN`), AIVault injects the real values at runtime, and scrubs them from the output before the AI sees anything.
 
-Works with **Claude Desktop**, **Kiro**, **Cursor**, **Windsurf**, and any MCP-compatible client.
+Works with Claude Desktop, Kiro, Cursor, Windsurf, and any MCP-compatible client.
 
 ---
 
@@ -16,11 +16,11 @@ Every day, developers paste API keys, database passwords, and tokens directly in
 
 ```
 You:    "Deploy my app to AWS"
-AI:     calls run_command → "aws s3 cp ./build s3://my-bucket"
-AIVault: ✅ Injects $AWS_ACCESS_KEY_ID and $AWS_SECRET_ACCESS_KEY as env vars
-         ✅ Runs the command
-         ✅ Scrubs any leaked secrets from output
-         ✅ Returns clean result to AI
+AI:     calls run_command -> "aws s3 cp ./build s3://my-bucket"
+AIVault: Injects $AWS_ACCESS_KEY_ID and $AWS_SECRET_ACCESS_KEY as env vars
+         Runs the command
+         Scrubs any leaked secrets from output
+         Returns clean result to AI
 AI:     "Done! All files uploaded to S3."
 ```
 
@@ -67,7 +67,6 @@ Add to your MCP config:
 }
 ```
 
-
 | AI Tool | Config File Location |
 |---------|---------------------|
 | Claude Desktop | `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) |
@@ -75,7 +74,7 @@ Add to your MCP config:
 | Cursor | `.cursor/mcp.json` in your project |
 | Windsurf | `~/.windsurf/mcp.json` |
 
-### 5. Done! Ask your AI to use your secrets
+### 5. Ask your AI to use your secrets
 
 > "Check how many users are in my database"
 
@@ -91,42 +90,42 @@ Manage secrets visually instead of the CLI:
 aivault dashboard
 ```
 
-Opens a local web UI at `http://localhost:7470` where you can add, view, and delete secrets from your browser.
+Opens a local web UI at `http://localhost:7470` where you can add, view, edit, and delete secrets from your browser.
 
 ---
 
 ## How It Works
 
 ```
-User ←→ AI (Claude, Kiro, Cursor, etc.)
-              ↓
+User <-> AI (Claude, Kiro, Cursor, etc.)
+              |
          MCP Protocol
-              ↓
-     ┌─────────────────┐
-     │  AIVault MCP     │
-     │                  │
-     │  Secret Store    │  ← AES-256-GCM encrypted local file
-     │  Executor        │  ← Injects secrets as env vars
-     │  Scrubber        │  ← Removes secret values from output
-     └─────────────────┘
+              |
+     +------------------+
+     |  AIVault MCP      |
+     |                   |
+     |  Secret Store     |  <- AES-256-GCM encrypted local file
+     |  Executor         |  <- Injects secrets as env vars
+     |  Scrubber         |  <- Removes secret values from output
+     +------------------+
 ```
 
 ### MCP Tools
 
 | Tool | What it does |
 |------|-------------|
-| `list_secrets` | Shows available secrets (name + description only, **never values**) |
+| `list_secrets` | Shows available secrets (name + description only, never values) |
 | `run_command` | Runs a shell command with secrets injected as env vars, output scrubbed |
 | `request_secret` | AI asks the user to add a missing secret |
 
 ### Security
 
-- 🔒 **Encrypted at rest** — AES-256-GCM with PBKDF2 key derivation (100k iterations, SHA-512)
-- 🚫 **AI never sees values** — only names, descriptions, and tags
-- 🧹 **Output always scrubbed** — raw, URL-encoded, and Base64-encoded values are all caught
-- 💉 **Env var injection only** — secrets are never interpolated into command strings (prevents shell injection)
-- ⏱️ **Timeout enforcement** — commands are killed after 30s (configurable, max 300s)
-- 🏠 **100% local** — no cloud, no network, no telemetry
+- Encrypted at rest — AES-256-GCM with PBKDF2 key derivation (100k iterations, SHA-512)
+- AI never sees values — only names, descriptions, and tags
+- Output always scrubbed — raw, URL-encoded, and Base64-encoded values are all caught
+- Env var injection only — secrets are never interpolated into command strings (prevents shell injection)
+- Timeout enforcement — commands are killed after 30s (configurable, max 300s)
+- 100% local — no cloud, no network, no telemetry
 
 ---
 
@@ -147,19 +146,19 @@ Set `AIVAULT_MASTER_PASSWORD` env var to skip password prompts.
 
 ## Example Interactions
 
-**Using a database:**
+Using a database:
 > You: "How many orders were placed today?"
-> AI → `run_command`: `psql $DB_URL -c "SELECT COUNT(*) FROM orders WHERE date = CURRENT_DATE"`
+> AI runs: `psql $DB_URL -c "SELECT COUNT(*) FROM orders WHERE date = CURRENT_DATE"`
 > Result: `count: 847` (connection string scrubbed)
 
-**Deploying code:**
+Deploying code:
 > You: "Push my Docker image to ECR"
-> AI → `run_command`: `aws ecr get-login-password | docker login ... && docker push`
+> AI runs: `aws ecr get-login-password | docker login ... && docker push`
 > AWS credentials injected via env vars, never visible to AI
 
-**Missing credential:**
+Missing credential:
 > You: "Send a Slack notification"
-> AI → `request_secret`: "I need a SLACK_WEBHOOK_URL. Please run: `aivault set SLACK_WEBHOOK_URL --desc 'Slack webhook'`"
+> AI: "I need a SLACK_WEBHOOK_URL. Please run: `aivault set SLACK_WEBHOOK_URL --desc 'Slack webhook'`"
 
 ---
 
@@ -169,4 +168,4 @@ MIT
 
 ---
 
-Built by [Mohammed Shomis](https://github.com/mohshomis) with ❤️ for developers who care about security.
+Built by [Mohammed Shomis](https://github.com/mohshomis) for developers who care about security.
